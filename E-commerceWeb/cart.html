@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    *{
+        padding:0px;
+        margin: 0px;
+    }
+    body{
+        background-color: white;
+        height: 100vh;
+        padding-bottom: 30px;
+    }
+    .cart-container {
+    width: 600px;
+    height: 90vh;
+    
+    gap: 20px; /* shorthand for row-gap and column-gap */
+    
+}
+    .item{
+        border-radius: 10px;
+        padding:20px;
+        width: 60%;
+        height: 33%;
+        align-items: center;
+        gap: 20px;
+        background-color:antiquewhite;
+        margin-bottom: 10px;
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .item img{
+        height: 40%;
+        width:40%;
+        border-radius: 10px;
+    }
+    .item h3{
+        font-size: 30px;
+        color: crimson;
+        margin-top: 10px;
+    }
+    #total{
+        position: relative;
+        top: 150px;
+        left: 20px;
+        border-radius: 20px;
+        padding-bottom: 20px;
+        background-color: brown;
+        padding-top: 20px;
+        color: white;
+        height: fit-content;
+        width: fit-content;
+        padding-right: 10px;
+        padding-left: 10px;
+        
+    }
+    .buttons{
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+    }
+    .buttons button{
+        height: 20px;
+        width: 20px;
+        border-radius: 50%;
+        color: white;
+        background-color: brown;
+    }
+    .btn{
+        height: 40px;
+        width: 80px;
+        border-radius: 10px;
+        color: white;
+        background-color:coral;
+        border: none;
+    }
+    .item-info{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+</style>
+<body>
+    <a href="home.html"><p><-- Back Home</p></a>
+    <h2>Your Cart</h2>
+    <div class="cart-container" id="cart-container"></div>
+    <div class="total" id="total"></div>
+     
+    <script>
+        function deletefromcart(index){
+            const cart = JSON.parse(localStorage.getItem("cart")) || []
+            cart.splice(index,1)
+            localStorage.setItem("cart", JSON.stringify(cart));
+            loadcart()
+
+
+        }
+        function decreasequantity(productId){
+            let cart = JSON.parse(localStorage.getItem("cart")) || []
+            const item = cart.find(p=> p.id  === productId)
+            const index = cart.findIndex(p => p.id === productId)
+            if(item){
+                if(item.quantity > 1){
+                    item.quantity -= 1
+                }
+                else{
+                    cart.splice(index,1)
+                }
+            }
+            localStorage.setItem("cart",JSON.stringify(cart))
+            loadcart()
+        }
+        function increasequantity(productId){
+          let cart = JSON.parse(localStorage.getItem("cart")) || []
+          const item = cart.find(p=> p.id  === productId)
+          if(item){
+            item.quantity += 1;
+          }
+          localStorage.setItem("cart",JSON.stringify(cart))
+          loadcart()
+        }
+        function loadcart(){
+            const cart = JSON.parse(localStorage.getItem("cart")) || []
+            const container = document.getElementById("cart-container")
+            const totalDiv = document.getElementById("total")
+            if (cart.length === 0){
+                container.innerHTML = "<p>Your cart is empty.</p>"
+                totalDiv.innerHTML = ""
+                return
+            }
+            let total = 0;
+            container.innerHTML = ""
+            cart.forEach((item,index)=>{
+                total += item.price*item.quantity
+                const itemdiv = document.createElement("div")
+                itemdiv.className = "item"
+                itemdiv.innerHTML = `<img src="${item.image}"/>
+                <div class="item-info"><h4>${item.name}</h4>
+                    <p class="price">$${item.price * item.quantity}</p>
+                    <div class="buttons">
+                    <button class="increment" onclick="decreasequantity(${item.id})">-</button>
+                    <p class="quantity">${item.quantity}</p>
+                    <button class="increment" onclick="increasequantity(${item.id})">+</button>
+                    </div>
+                    <button class="btn" onclick="deletefromcart(${item.id})">Delete</button>
+                </div>`
+
+                container.appendChild(itemdiv)
+            })
+
+            totalDiv.innerHTML = `Total: $${total}`
+        }
+        loadcart()
+    </script>
+</body>
+</html>
